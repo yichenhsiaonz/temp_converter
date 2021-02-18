@@ -3,6 +3,32 @@ from functools import partial  # To prevent unwanted windows
 import random
 
 
+def num_checker(input_number, minimum):
+    if input_number.lstrip("-").replace(".", "", 1).isnumeric():
+        number = float(input_number)
+        if number >= minimum:
+            return True
+    else:
+        return False
+
+
+def rounding(num_to_round):
+    if num_to_round % 1 != 0:
+        return round(num_to_round, 1)
+    else:
+        return num_to_round
+
+
+def to_c(temp):
+    c = ((temp - 32) * 5 / 9)
+    return rounding(c)
+
+
+def to_f(temp):
+    f = (temp * 9 / 5 + 32)
+    return rounding(f)
+
+
 class Converter:
     def __init__(self):
         # Formatting variables
@@ -42,41 +68,54 @@ class Converter:
 
         self.to_c_button = Button(self.conversion_buttons_frame,
                                   text="To Centigrade", font=("Arial", 10, "bold"),
-                                  bg="Khaki1", padx=10, pady=10)
+                                  bg="Khaki1", padx=10, pady=10,
+                                  command=self.convert(2))
         self.to_c_button.grid(row=0, column=0)
 
         self.to_f_button = Button(self.conversion_buttons_frame,
                                   text="To Fahrenheit", font=("Arial", 10, "bold"),
-                                  bg="Orchid1", padx=10, pady=10)
+                                  bg="Orchid1", padx=10, pady=10,
+                                  command=self.convert(1))
         self.to_f_button.grid(row=0, column=1)
 
         # Answer label (row 4)
 
         self.temp_answer_label = Label(self.converter_frame,
-                                             text="Conversion will appear here...",
-                                             font=("Arial", 14), wrap=250,
-                                             justify=LEFT, bg=background_color,
-                                             padx=10, pady=10, fg="indianred1")
+                                       text="Conversion will appear here...",
+                                       font=("Arial", 14), wrap=250,
+                                       justify=LEFT, bg=background_color,
+                                       padx=10, pady=10, fg="indianred1")
         self.temp_answer_label.grid(row=4)
 
         # Help button / history (row 5)
-        self.history_help_frame= Frame(self.converter_frame)
+        self.history_help_frame = Frame(self.converter_frame)
         self.history_help_frame.grid(row=5, pady=10)
 
         self.history_button = Button(self.history_help_frame, text="Calculation History",
-                                  font=("Arial", 10, "bold"),
-                                  padx=10, pady=5)
+                                     font=("Arial", 10, "bold"),
+                                     padx=10, pady=5)
         self.history_button.grid(row=5, column=0)
 
         self.help_button = Button(self.history_help_frame, text="Help",
                                   font=("Arial", 10, "bold"),
-                                  padx=10, pady=5)
+                                  padx=10, pady=5,
+                                  command=self.help)
         self.help_button.grid(row=5, column=1)
 
     def help(self):
-        print("You asked for help")
         get_help = Help(self)
         get_help.help_text.configure(text="Help text goes here")
+
+    def convert(self, type):
+
+        print(type)
+
+        # Type to check if temp is celsius or fahrenheit
+        # 1 is celsius and 2 is fahrenheit
+
+        number = self.to_convert_entry.get()
+
+        self.temp_answer_label.configure(text = number)
 
 
 class Help:

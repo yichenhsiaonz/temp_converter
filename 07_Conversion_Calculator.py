@@ -16,7 +16,7 @@ def rounding(num_to_round):
     if num_to_round % 1 != 0:
         return round(num_to_round, 1)
     else:
-        return num_to_round
+        return int(num_to_round)
 
 
 def to_c(temp):
@@ -30,7 +30,9 @@ def to_f(temp):
 
 
 class Converter:
+
     def __init__(self):
+
         # Formatting variables
         background_color = "bisque"
 
@@ -48,10 +50,11 @@ class Converter:
         self.temp_converter_label.grid(row=0)
 
         # Temperature Conversion Heading {row 1)
+
+        self.instructions = "Type in the amount to be converted and then push one of the buttons below..."
+
         self.temp_instructions_label = Label(self.converter_frame,
-                                             text="Type in the amount to be "
-                                                  "converted and then push "
-                                                  "one of the buttons below...",
+                                             text=self.instructions,
                                              font="Arial, 10", wrap=250,
                                              justify=LEFT, bg=background_color,
                                              padx=10, pady=10)
@@ -69,13 +72,13 @@ class Converter:
         self.to_c_button = Button(self.conversion_buttons_frame,
                                   text="To Centigrade", font=("Arial", 10, "bold"),
                                   bg="Khaki1", padx=10, pady=10,
-                                  command=self.convert(2))
+                                  command=lambda: self.convert("fahrenheit"))
         self.to_c_button.grid(row=0, column=0)
 
         self.to_f_button = Button(self.conversion_buttons_frame,
                                   text="To Fahrenheit", font=("Arial", 10, "bold"),
                                   bg="Orchid1", padx=10, pady=10,
-                                  command=self.convert(1))
+                                  command=lambda: self.convert("celsius"))
         self.to_f_button.grid(row=0, column=1)
 
         # Answer label (row 4)
@@ -106,16 +109,37 @@ class Converter:
         get_help = Help(self)
         get_help.help_text.configure(text="Help text goes here")
 
-    def convert(self, type):
+    def convert(self, unit):
 
-        print(type)
+        error = "#ffafaf"
+        converted_number = ""
 
-        # Type to check if temp is celsius or fahrenheit
-        # 1 is celsius and 2 is fahrenheit
+        # Unit to check if temp is celsius or fahrenheit
 
         number = self.to_convert_entry.get()
 
-        self.temp_answer_label.configure(text = number)
+        if unit == "celsius":
+            other_unit = "fahrenheit"
+            if num_checker(number, -273.15):
+                converted_number = to_f(float(number))
+        else:
+            other_unit = "celsius"
+            if num_checker(number, -459.67):
+                converted_number = to_c(float(number))
+        if converted_number != "":
+
+            answer_text = "{} degrees {} is {} degrees {}".format(number, unit, converted_number, other_unit)
+
+            self.temp_answer_label.config(text=answer_text)
+            self.temp_instructions_label.config(text=self.instructions)
+            self.to_convert_entry.config(bg="#FFF")
+
+            global calculation_history
+            calculation_history.append(answer_text)
+
+        else:
+            self.to_convert_entry.config(bg=error)
+            self.temp_instructions_label.config(text="Please enter a valid integer or float")
 
 
 class Help:
@@ -154,11 +178,14 @@ class Help:
         self.dismiss_btn.grid(row=2, pady=10)
 
     def close_help(self, partner):
-        # Put help button back to notmal...
+        # Put help button back to normal...
         partner.help_button.config(state=NORMAL)
         self.help_box.destroy()
 
 # main routine
+
+calculation_history = []
+
 if __name__ == "__main__":
     root = Tk()
     root.title("Temperature Conversion Calculator")

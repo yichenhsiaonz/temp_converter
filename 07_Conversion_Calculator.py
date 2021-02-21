@@ -7,9 +7,14 @@ def num_checker(input_number, minimum):
     if input_number.lstrip("-").replace(".", "", 1).isnumeric():
         number = float(input_number)
         if number >= minimum:
-            return True
+            return 3
+        else:
+            return 0
     else:
-        return False
+        return 1
+
+
+# 0 means too cold while 1 means not a number 3 means no errors
 
 
 def rounding(num_to_round):
@@ -83,8 +88,10 @@ class Converter:
 
         # Answer label (row 4)
 
+        self.answer_placeholder = "Conversion will appear here..."
+
         self.temp_answer_label = Label(self.converter_frame,
-                                       text="Conversion will appear here...",
+                                       text=self.answer_placeholder,
                                        font=("Arial", 14), wrap=250,
                                        justify=LEFT, bg=background_color,
                                        padx=10, pady=10, fg="indianred1")
@@ -117,18 +124,29 @@ class Converter:
         # Unit to check if temp is celsius or fahrenheit
 
         number = self.to_convert_entry.get()
+        print(number)
 
         if unit == "celsius":
+            minimum = -273.15
             other_unit = "fahrenheit"
-            if num_checker(number, -273.15):
+            checked_num = num_checker(number, minimum)
+            if checked_num == 3:
                 converted_number = to_f(float(number))
+            error_type = checked_num
         else:
+            minimum = -459.67
             other_unit = "celsius"
-            if num_checker(number, -459.67):
+            checked_num = num_checker(number, minimum)
+            if checked_num == 3:
                 converted_number = to_c(float(number))
-        if converted_number != "":
+            error_type = checked_num
+        if error_type == 3:
 
-            answer_text = "{} degrees {} is {} degrees {}".format(number, unit, converted_number, other_unit)
+            output = "{} degrees {} is {} degrees {}".format(number, unit, converted_number, other_unit)
+
+            print(output)
+
+            answer_text = output
 
             self.temp_answer_label.config(text=answer_text)
             self.temp_instructions_label.config(text=self.instructions)
@@ -139,7 +157,12 @@ class Converter:
 
         else:
             self.to_convert_entry.config(bg=error)
-            self.temp_instructions_label.config(text="Please enter a valid integer or float")
+            if error_type == 0:
+                self.temp_answer_label.config(text="Too cold!!!")
+                self.temp_instructions_label.config(text=self.instructions)
+            else:
+                self.temp_instructions_label.config(text="Please enter a valid integer or float")
+                self.temp_answer_label.config(text=self.answer_placeholder)
 
 
 class Help:

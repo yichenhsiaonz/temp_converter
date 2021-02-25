@@ -1,6 +1,5 @@
 from tkinter import *
 from functools import partial  # To prevent unwanted windows
-import random
 
 
 def num_checker(input_number, minimum):
@@ -41,10 +40,10 @@ class Converter:
         # Variables
 
         global calculation_history
-        background_color = "bisque"
+        self.background = "bisque"
 
         # Converter Frame
-        self.converter_frame = Frame(width=300, bg=background_color,
+        self.converter_frame = Frame(width=300, bg=self.background,
                                      pady=10)
         self.converter_frame.grid()
 
@@ -52,7 +51,7 @@ class Converter:
         self.temp_converter_label = Label(self.converter_frame,
                                           text="Temperature Converter",
                                           font=("Arial", 16, "bold"),
-                                          bg=background_color,
+                                          bg=self.background,
                                           padx=10, pady=10)
         self.temp_converter_label.grid(row=0)
 
@@ -63,7 +62,7 @@ class Converter:
         self.temp_instructions_label = Label(self.converter_frame,
                                              text=self.instructions,
                                              font="Arial, 10", wrap=250,
-                                             justify=LEFT, bg=background_color,
+                                             justify=LEFT, bg=self.background,
                                              padx=10, pady=10)
         self.temp_instructions_label.grid(row=1)
 
@@ -95,7 +94,7 @@ class Converter:
         self.temp_answer_label = Label(self.converter_frame,
                                        text=self.answer_placeholder,
                                        font=("Arial", 14), wrap=250,
-                                       justify=LEFT, bg=background_color,
+                                       justify=LEFT, bg=self.background,
                                        padx=10, pady=10, fg="indianred1")
         self.temp_answer_label.grid(row=4)
 
@@ -213,8 +212,6 @@ class Help:
 class History:
     def __init__(self, partner):
 
-        background = "orange"
-
         # disable history button
         partner.history_button.config(state=DISABLED)
 
@@ -225,19 +222,19 @@ class History:
         self.history_box.protocol('WM_DELETE_WINDOW', partial(self.close_history, partner))
 
         # Set up GUI Frame
-        self.history_frame = Frame(self.history_box, width=300, bg=background)
+        self.history_frame = Frame(self.history_box, width=300, bg=partner.background)
         self.history_frame.grid()
         # Set up History heading (row 0)
         self.history_label = Label(self.history_frame, text="Calculation History",
                                    font=("Arial", "14", "bold"),
-                                   bg=background,
+                                   bg=partner.background,
                                    padx=10, pady=10)
         self.history_label.grid(row=0)
 
         # History text (label, row 1)
         self.history_text = Label(self.history_frame,
                                   justify=LEFT, width=40,
-                                  bg=background, wrap=250,)
+                                  bg=partner.background, wrap=250,)
         self.history_text.grid(row=1)
 
         # History entries
@@ -260,7 +257,7 @@ class History:
 
         self.history_list = Label(self.history_frame, text=history_string,
                                   justify=LEFT, width=40,
-                                  bg=background, wrap=250, )
+                                  bg=partner.background, wrap=250, )
         self.history_list.grid(row=2)
 
         # Dismiss button (row 2)

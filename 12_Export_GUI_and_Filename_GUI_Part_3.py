@@ -1,6 +1,6 @@
 from tkinter import *
 from functools import partial  # To prevent unwanted windows
-import random
+import re
 
 
 def num_checker(input_number, minimum):
@@ -18,10 +18,8 @@ def num_checker(input_number, minimum):
 
 
 def regex_check(file_name):
-    if re.search("\s", file_name):
-        return "Invalid file name - no spaces"
-    if re.search("\.", file_name):
-        return "Invalid file name - no periods"
+    if re.search("[<>:\"/|?*\\\\]", file_name):
+        return "Invalid file name - illegal character(s)\n < > : \" / \\ | ? *)"
     if file_name == "":
         return "Invalid file name - can't be blank"
     return "No Error"
@@ -302,7 +300,7 @@ class History:
 class Export:
     def __init__(self, partner):
 
-        background="bisque"
+        background = "bisque"
 
         # disable export button
         partner.export_button.config(state=DISABLED)
@@ -312,7 +310,7 @@ class Export:
         self.export_box = Toplevel()
 
         # If users press cross at top, closes export and 'releases' export button
-        self.export_box.protocol('WM_DELETE_WINDOW', partial(self.close_export, partner))
+        self.export_box.protocol('WM_DELETE_WINDOW', partial(self.dismiss_check, partner))
 
         # Set up GUI Frame
         self.export_frame = Frame(self.export_box, width=300, bg=background)
@@ -348,14 +346,18 @@ class Export:
         # Dismiss button (row 2)
         self.dismiss_btn = Button(self.export_dismiss_frame, text="Dismiss",
                                   padx=10, pady=5, font="arial 10 bold",
-                                  command=partial(self.close_export, partner))
+                                  command=partial(self.dismiss_check, partner))
         self.dismiss_btn.grid(row=0, column=1)
 
-    def close_export(self, partner):
-        # Put export button back to normal...
-        partner.export_button.config(state=NORMAL)
-        partner.dismiss_btn.config(state=NORMAL)
-        self.export_box.destroy()
+    def dismiss_check(self, partner):
+        if partner.history_box.winfo_exists():
+            # Put export button back to normal...
+            partner.export_button.config(state=NORMAL)
+            partner.dismiss_btn.config(state=NORMAL)
+            self.export_box.destroy()
+        else:
+            # prevents errors if history box is closed first
+            self.export_box.destroy()
 
     def press_export(self):
         chosen_name = self.file_name_input.get()
@@ -369,7 +371,7 @@ class Export:
                 text_file.write("{}\n".format(x))
 
             text_file.close()
-            self.export_text.config(text="")
+            self.export_text.config(text="Success!")
 
         else:
             self.export_text.config(text=regex_check_result)
